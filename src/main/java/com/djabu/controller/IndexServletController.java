@@ -14,6 +14,11 @@ public class IndexServletController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        Object user = request.getSession().getAttribute("user");
+        if(user != null){
+             response.sendRedirect("home");
+             return;
+        }
         request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
     }
 

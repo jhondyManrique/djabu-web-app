@@ -24,7 +24,7 @@
                 Back
               </h1>
               <%
-              String message = (String) request.getAttribute("loginMessage");
+              String message = (String) request.getAttribute("Message");
               if(message != null){
               %>
                     <p style="color:red; margin:0; padding:0; text-align:center;"><%= message %></p>
@@ -45,7 +45,7 @@
               </div>
 
               <button type="submit">Sign In</button>
-              <a href="/sign-up">
+              <a href="/register">
                 <button type="button">Sign Up</button>
               </a>
             </form>

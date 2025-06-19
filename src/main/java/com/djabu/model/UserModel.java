@@ -1,7 +1,6 @@
 package com.djabu.model;
 
 public class UserModel {
-    protected int id;
     protected String identification;
     protected String firstname;
     protected String lastname;
@@ -12,8 +11,7 @@ public class UserModel {
     public UserModel() {
     }
 
-    public UserModel(int id, String identification, String firstname, String lastname, String phone, String email, String password) {
-        this.id = id;
+    public UserModel(String identification, String firstname, String lastname, String phone, String email, String password) {
         this.identification = identification;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -38,13 +36,7 @@ public class UserModel {
         this.firstname = firstname;
     }
 
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getIdentification() {
         return identification;
@@ -78,10 +70,7 @@ public class UserModel {
         this.phone = phone;
     }
 
-    @Override
-    public String toString() {
-        return "Persona{id=" + id + ", nombre='" + firstname + "', apellido='" + lastname + "'}";
-    }
+
 
 
 }
