@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.djabu.dao.Conexion.obtenerConexion;
+import static com.djabu.dao.Conexion.getConexion;
 
 
 public class UserDAO {
@@ -16,12 +16,11 @@ public class UserDAO {
         String sql="SELECT * from users";
 
         try {
-            Connection conn = obtenerConexion();
+            Connection conn = getConexion();
             Statement stm = conn.createStatement();
             ResultSet rs = stm.executeQuery(sql);
 
             while (rs.next()){
-                int id = rs.getInt("id");
                 String identification = rs.getString("identification");
                 String firstname = rs.getString("firstname");
                 String lastname = rs.getString("lastname");
@@ -29,7 +28,7 @@ public class UserDAO {
                 String email = rs.getString("email");
                 String password = rs.getString("password");
 
-                users.add(new UserModel(id,identification,firstname,lastname,phone,email,password) );
+                users.add(new UserModel(identification,firstname,lastname,phone,email,password) );
             }
         }catch (SQLException e){
             System.out.println("error: " + e.getMessage());
@@ -39,18 +38,17 @@ public class UserDAO {
 
 
     }
+    
 
-    public UserModel login(String email, String password){
+    public static UserModel getUserByEmail(String email){
         UserModel user = null;
-        String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
-        try(Connection conn = obtenerConexion();
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try(Connection conn = getConexion();
             PreparedStatement pstm = conn.prepareStatement(sql);) {
             pstm.setString(1, email);
-            pstm.setString(2, password);
             ResultSet rs = pstm.executeQuery();
             if (rs.next()){
                 user = new UserModel();
-                user.setId(rs.getInt("id"));
                 user.setIdentification(rs.getString("identification"));
                 user.setFirstname(rs.getString("firstname"));
                 user.setLastname(rs.getString("lastname"));
@@ -68,10 +66,12 @@ public class UserDAO {
     }
 
 
-    public void insertUser(UserModel user) {
+    public int SignUpUser(UserModel user) {
+
+        int afectedRows = 0;
         String sql = "INSERT INTO users (identification,firstname,lastname,phone,email,password) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = obtenerConexion();
+        try (Connection conn = getConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, user.getIdentification());
@@ -81,27 +81,19 @@ public class UserDAO {
             pstmt.setString(5, user.getEmail());
             pstmt.setString(6, user.getPassword());
 
+            afectedRows = pstmt.executeUpdate();
 
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas > 0) {
-                try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        user.setId(rs.getInt(1));
-                    }
-                }
-
-            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        return afectedRows;
     }
 
     public void UpdateUser(int id, String firstname, String lastname) {
         String sql = "UPDATE users SET firstname = ?, lastname = ? WHERE id = ?";
 
-        try (Connection conn = obtenerConexion();
+        try (Connection conn = getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, firstname);
@@ -119,7 +111,7 @@ public class UserDAO {
     public boolean DeleteUser(int id) {
         String sql = "DELETE FROM users WHERE id = ?";
 
-        try (Connection conn = obtenerConexion();
+        try (Connection conn = getConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -132,4 +124,21 @@ public class UserDAO {
             return false;
         }
     }
-}
+
+
+    public boolean validateUserByIdentificationOrEmail(String identification, String email) throws SQLException {
+        String sql = "SELECT * FROM users WHERE identification = ? OR email = ?";
+        try (Connection conn = getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1,identification);
+            stmt.setString(2,email);
+
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        }catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+    }
+

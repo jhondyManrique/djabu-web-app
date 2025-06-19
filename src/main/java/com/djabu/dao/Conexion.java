@@ -5,16 +5,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Conexion {
-    private static final String URL = "jdbc:postgresql://localhost:5432/djabu";
-    private static final String USUARIO = "djabu_user";
-    private static final String PASSWORD = "jhondy12345";
+    private static final String URL = System.getenv("POSTGRESQL_JDBC_URL");
+    private static final String USUARIO = System.getenv("POSTGRESQL_JDBC_USER");
+    private static final String PASSWORD = System.getenv("POSTGRESQL_JDBC_PASSWORD");;
     private static Connection conexion = null;
 
 
     private Conexion() {}
 
 
-    public static Connection obtenerConexion() {
+    public static Connection getConexion() {
             try {
                 Class.forName("org.postgresql.Driver");
 

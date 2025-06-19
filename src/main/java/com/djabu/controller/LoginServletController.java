@@ -2,11 +2,13 @@ package com.djabu.controller;
 
 import com.djabu.dao.UserDAO;
 import com.djabu.model.UserModel;
+import com.djabu.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -20,11 +22,13 @@ public class LoginServletController extends HttpServlet {
         String password = request.getParameter("password");
 
 
-        UserModel user = new UserDAO().login(email,password);
+        UserModel user = new UserService().authenticateUser(email,password);
         if (user != null) {
-            request.getRequestDispatcher("/WEB-INF/view/inventario.jsp").forward(request, response);
+            HttpSession session = request.getSession();
+            session.setAttribute("user", user.getFirstname());
+            response.sendRedirect("home");
         }else {
-            request.setAttribute("loginMessage", "invalid credentials");
+            request.setAttribute("Message", "invalid credentials");
             request.getRequestDispatcher("/WEB-INF/view/login.jsp").forward(request, response);
         }
 
