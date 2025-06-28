@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'war'
     id("org.openrewrite.rewrite") version("6.16.0")
 }
 
-group = 'com.fbaron'
+group = 'com.djabu'
 version = '1.0-SNAPSHOT'
 
 rewrite {
@@ -16,11 +17,24 @@ repositories {
 
 dependencies {
     rewrite("org.openrewrite.recipe:rewrite-migrate-java:2.17.0")
+
+    // API de Jakarta EE (provistas por Tomcat, por eso el scope)
     compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
-    implementation 'org.postgresql:postgresql:42.7.5'
+    providedRuntime 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.1.1'
+    providedRuntime 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+    providedRuntime 'org.glassfish:jakarta.el:5.0.0-M1'
+
+    // Driver de Base de Datos
+    implementation 'org.postgresql:postgresql:42.7.7'
+
+    // Librerías de la aplicación
     implementation 'org.springframework.security:spring-security-crypto:6.5.0'
     implementation 'commons-logging:commons-logging:1.3.5'
+    implementation 'org.flywaydb:flyway-core:11.9.1'
+    // CAMBIO: de runtimeOnly a implementation para mayor seguridad
+    implementation 'org.flywaydb:flyway-database-postgresql:11.9.1'
 
+    // Dependencias de Pruebas
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
